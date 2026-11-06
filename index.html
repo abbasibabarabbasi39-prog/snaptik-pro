@@ -1,0 +1,194 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Video Downloader - No Watermark</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-pink-500 selection:text-white">
+
+    <!-- Header / Navbar -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 via-rose-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-pink-500/20">
+                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/>
+                    </svg>
+                </div>
+                <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-pink-400 to-cyan-400 bg-clip-text text-transparent">SnapTik Pro</span>
+            </div>
+            <div class="text-xs text-slate-400 font-medium">Simulated Engine v2.0</div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow flex items-center justify-center px-4 py-12">
+        <div class="max-w-2xl w-full mx-auto text-center space-y-8">
+            
+            <!-- Hero Title -->
+            <div class="space-y-3">
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
+                    Download TikTok Videos <span class="bg-gradient-to-r from-pink-500 to-cyan-400 bg-clip-text text-transparent">Without Watermark</span>
+                </h1>
+                <p class="text-slate-400 text-sm sm:text-base max-w-lg mx-auto">
+                    Paste any TikTok video link below to parse metadata and extract clean HD streams instantly.
+                </p>
+            </div>
+
+            <!-- Input Form Card -->
+            <div class="bg-slate-900 border border-slate-800 p-4 sm:p-6 rounded-2xl shadow-2xl shadow-cyan-950/20 space-y-4">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <div class="relative flex-grow">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                            </svg>
+                        </span>
+                        <input 
+                            type="text" 
+                            id="urlInput" 
+                            placeholder="Paste TikTok link here (e.g. https://vm.tiktok.com/...)" 
+                            class="w-full pl-12 pr-4 py-3.5 bg-slate-950 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all text-sm"
+                        >
+                    </div>
+                    <button 
+                        id="downloadBtn"
+                        onclick="handleDownload()"
+                        class="px-6 py-3.5 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-semibold rounded-xl shadow-lg shadow-pink-600/30 transition-all transform active:scale-95 flex items-center justify-center space-x-2 cursor-pointer"
+                    >
+                        <span>Download</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Quick Sample Link helper -->
+                <div class="flex items-center justify-between text-xs text-slate-500 pt-1">
+                    <span>Try sample:</span>
+                    <button onclick="injectSample()" class="text-cyan-400 hover:underline font-medium">https://www.tiktok.com/@creator/video/7234567890123456789</button>
+                </div>
+            </div>
+
+            <!-- Loader State (Hidden by default) -->
+            <div id="loader" class="hidden py-8 space-y-4">
+                <div class="inline-block w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+                <p id="loaderText" class="text-sm text-slate-400">Resolving URL redirects and extracting metadata...</p>
+            </div>
+
+            <!-- Result Box (Hidden by default) -->
+            <div id="resultBox" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-6 text-left animate-fadeIn">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-24 bg-slate-950 rounded-lg overflow-hidden border border-slate-800 flex-shrink-0 relative">
+                        <img id="resultThumb" src="https://placehold.co/100x150/1e293b/cbd5e1?text=Video" alt="Thumbnail" class="w-full h-full object-cover">
+                    </div>
+                    <div class="space-y-1 overflow-hidden">
+                        <div class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Success • Unwatermarked</div>
+                        <h3 id="resultTitle" class="font-semibold text-slate-200 text-sm sm:text-base truncate">Awesome viral dance challenge 2026!</h3>
+                        <p id="resultAuthor" class="text-xs text-slate-400">@trending_creator • 1.2M views</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <button onclick="simulateFileDownload('video')" class="w-full py-3 px-4 bg-pink-600 hover:bg-pink-500 border border-pink-500 rounded-xl font-medium text-sm text-white flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-lg shadow-pink-600/30">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        <span>Download MP4 (HD No Watermark)</span>
+                    </button>
+                    <button onclick="simulateFileDownload('audio')" class="w-full py-3 px-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl font-medium text-sm text-white flex items-center justify-center space-x-2 transition-all cursor-pointer">
+                        <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                        </svg>
+                        <span>Download MP3 (Audio Only)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Custom Message Modal Box -->
+            <div id="msgModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div class="bg-slate-900 border border-slate-800 max-w-sm w-full p-6 rounded-2xl shadow-2xl space-y-4 text-center">
+                    <div id="modalIcon" class="w-12 h-12 rounded-full bg-pink-500/10 text-pink-400 mx-auto flex items-center justify-center border border-pink-500/20 font-bold text-lg">!</div>
+                    <h4 id="modalTitle" class="font-bold text-white text-lg">Notice</h4>
+                    <p id="modalDesc" class="text-sm text-slate-400">Please enter a valid TikTok video URL.</p>
+                    <button onclick="closeModal()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-semibold transition-all">OK</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        <p>&copy; 2026 SnapTik Pro Simulator. Educational demonstration of backend workflow & parsing logic.</p>
+    </footer>
+
+    <!-- Script Logic -->
+    <script>
+        function injectSample() {
+            document.getElementById('urlInput').value = 'https://www.tiktok.com/@creative_mind/video/7350129485729102839';
+        }
+
+        function showModal(title, desc) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = desc;
+            document.getElementById('msgModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('msgModal').classList.add('hidden');
+        }
+
+        function handleDownload() {
+            const urlInput = document.getElementById('urlInput');
+            const url = urlInput.value.trim();
+            if (!url) {
+                showModal('Input Required', 'Please paste a TikTok link into the input field first.');
+                return;
+            }
+            if (!url.includes('tiktok.com')) {
+                showModal('Invalid URL', 'The link provided does not appear to be a valid TikTok URL.');
+                return;
+            }
+
+            // Hide previous results and show loader
+            document.getElementById('resultBox').classList.add('hidden');
+            document.getElementById('loader').classList.remove('hidden');
+
+            // Simulate pipeline: Redirect resolution -> Metadata fetching -> Unwatermarked stream extraction
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+                document.getElementById('resultBox').classList.remove('hidden');
+            }, 1200);
+        }
+
+        function simulateFileDownload(type) {
+            const fileType = type === 'video' ? 'MP4 Video (HD No Watermark)' : 'MP3 Audio Stream';
+            
+            // Create a fake programmatic download trigger to simulate actual browser file downloading
+            const dummyBlob = new Blob(['Simulated TikTok media stream data content'], { type: type === 'video' ? 'video/mp4' : 'audio/mp3' });
+            const blobUrl = URL.createObjectURL(dummyBlob);
+            const anchor = document.createElement('a');
+            anchor.href = blobUrl;
+            anchor.download = type === 'video' ? 'tiktok_video_nowatermark.mp4' : 'tiktok_audio.mp3';
+            document.body.appendChild(anchor);
+            anchor.click();
+            document.body.removeChild(anchor);
+            URL.revokeObjectURL(blobUrl);
+
+            showModal('Download Started!', `Your simulated ${fileType} has been successfully triggered and downloaded to your device.`);
+        }
+    </script>
+</body>
+</html>
+
+```
